@@ -1,71 +1,69 @@
+import { useState } from 'react'
 
-const Header = (props) => {
+const Display = ({ counter }) => <div>{counter}</div>
+
+
+
+const History = (props) => {
+  if (props.allClicks.length === 0) {
+    return (
+      <div>
+        the app is used by pressing the buttons
+      </div>
+    )
+  }
   return (
-    <h1>{props.course.name}</h1>
+    <div>
+      button press history: {props.allClicks.join(' ')}
+    </div>
   )
 }
-const Content = (props) => {
+// const Button = ({ handleClick, text }) => (
+//   <button onClick={handleClick}>
+//     {text}
+//   </button>
+//)
+const Button = (props) => {
+  console.log('props value is' + props)
   return (
-    <>
-      <p>{props.course.parts[0].name} {props.course.parts[0].exercises}</p>
-      <p>{props.course.parts[1].name} {props.course.parts[1].exercises}</p>
-      <p>{props.course.parts[2].name} {props.course.parts[2].exercises}</p>
-    </>
-  )
-}
-const Total = (props) => {
-  return (
-    <p>Number of total exercises {props.course.parts[0].exercises + props.course.parts[1].exercises + props.course.parts[2].exercises}</p>
-  )
-}
-const Part1 = (props) => {
-  return (
-    <p>{props.name} {props.exercises}</p>
-  )
-}
-const Part2 = (props) => {
-  return (
-    <p>{props.name} {props.exercises}</p>
-  )
-}
-const Part3 = (props) => {
-  return (
-    <p>{props.name} {props.exercises}</p>
+    <button onClick={props.handleClick}>
+      {props.text}
+    </button>
   )
 }
 const App = () => {
-  const course = {
-    name: 'Half Stack application development',
-    parts: [
-      {
-        name: 'Fundamentals of React',
-        exercises: 10
-      },
-      {
-        name: 'Using props to pass data',
-        exercises: 7
-      },
-      {
-        name: 'State of a component',
-        exercises: 16
-      }
-    ]
+  const [left, setLeft] = useState(0)
+  const [right, setRight] = useState(0)
+  const [value, setValue] = useState(10)
+  const [allClicks, setAll] = useState([])
+
+
+  const handleLeftClick = () => {
+    setAll(allClicks.concat('L'))
+    setLeft(left + 1)
   }
 
 
-
+  const handleRightClick = () => {
+    setAll(allClicks.concat('R'))
+    setRight(right + 1)
+  }
+  const setToValue = (newValue) => () => {
+    console.log('value is set to ' + newValue)
+    setValue(newValue)
+  }
   return (
     <div>
-      <Header course={course} />
-      <Content course={course} />
-      <Total course={course} />
+      {/* {left}
+      <Button handleClick={setToValue(1000)} text='left' />
+      <Button handleClick={setToValue(10)} text='right' />
+      {right}
+      <History allClicks={setToValue(value + 1)} /> */}
+      <button onClick={setToValue(1000)}>thousand</button>'
+      <button onClick={setToValue(0)}>reset</button>
+      <button onClick={setToValue(value + 1)}>increment</button>
+      <button onClick={setToValue(100)}>hundred</button>
     </div>
-    // <>
-    //   <Part1 name={parts[0].name} exercises={parts[0].exercises} />
-    //   <Part2 name={parts[1].name} exercises={parts[1].exercises} />
-    //   <Part3 name={parts[2].name} exercises={parts[2].exercises} />
-    // </>
   )
 }
-
 export default App
