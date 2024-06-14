@@ -1,68 +1,41 @@
 import { useState } from 'react'
-
-const Display = ({ counter }) => <div>{counter}</div>
-
-
-
-const History = (props) => {
-  if (props.allClicks.length === 0) {
-    return (
-      <div>
-        the app is used by pressing the buttons
-      </div>
-    )
-  }
+const Statistics = (props) => {
   return (
     <div>
-      button press history: {props.allClicks.join(' ')}
+      <h1>statistics</h1>
+      <p>good {props.good}</p>
+      <p>neutral {props.neutral}</p>
+      <p>bad {props.bad}</p>
+      <p>all {props.total}</p>
+      <p>average {(props.good - props.bad) / props.total}</p>
+      <p>positive {props.good / props.total * 100} %</p>
     </div>
   )
 }
-// const Button = ({ handleClick, text }) => (
-//   <button onClick={handleClick}>
-//     {text}
-//   </button>
-//)
-const Button = (props) => {
-  console.log('props value is' + props)
-  return (
-    <button onClick={props.handleClick}>
-      {props.text}
-    </button>
-  )
-}
+
 const App = () => {
-  const [left, setLeft] = useState(0)
-  const [right, setRight] = useState(0)
-  const [value, setValue] = useState(10)
-  const [allClicks, setAll] = useState([])
-
-
-  const handleLeftClick = () => {
-    setAll(allClicks.concat('L'))
-    setLeft(left + 1)
+  const [good, setGood] = useState(0)
+  const [neutral, setNeutral] = useState(0)
+  const [bad, setBad] = useState(0)
+  const [total, setTotal] = useState(0)
+  const handleGood = () => {
+    setGood(good + 1)
+    setTotal(total + 1)
   }
-
-
-  const handleRightClick = () => {
-    setAll(allClicks.concat('R'))
-    setRight(right + 1)
+  const handleNeutral = () => {
+    setNeutral(neutral + 1)
+    setTotal(total + 1)
   }
-  const setToValue = (newValue) => () => {
-    console.log('value is set to ' + newValue)
-    setValue(newValue)
+  const handleBad = () => {
+    setBad(bad + 1)
+    setTotal(total + 1)
   }
   return (
     <div>
-      {/* {left}
-      <Button handleClick={setToValue(1000)} text='left' />
-      <Button handleClick={setToValue(10)} text='right' />
-      {right}
-      <History allClicks={setToValue(value + 1)} /> */}
-      <button onClick={setToValue(1000)}>thousand</button>'
-      <button onClick={setToValue(0)}>reset</button>
-      <button onClick={setToValue(value + 1)}>increment</button>
-      <button onClick={setToValue(100)}>hundred</button>
+      <button onClick={handleGood}>good</button>
+      <button onClick={handleNeutral}>neutral</button>
+      <button onClick={handleBad}>bad</button>
+      <Statistics good={good} neutral={neutral} bad={bad} total={total} />
     </div>
   )
 }
