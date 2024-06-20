@@ -7,6 +7,8 @@ function App() {
   const [search, setSearch] = useState('');
   const [countriesToShow, setCountriesToShow] = useState([]);
   const [show, setShow] = useState({});
+
+
   useEffect(() => {
     axios
       .get('https://restcountries.com/v3.1/all')
@@ -15,7 +17,8 @@ function App() {
       })
       .catch((error) => console.error(error))
   }, [])
-  console.log('render', countries.length, 'countries')
+  //console.log('render', countries.length, 'countries')
+
 
   const handleSearchChange = (event) => {
     setSearch(event.target.value)
@@ -41,10 +44,10 @@ function App() {
               countriesToShow.length === 1 ?
                 <Country country={countriesToShow[0]} /> :
                 countriesToShow.map(country =>
-                  <p>
+                  <div key={country.name.common}>
                     {country.name.common} <button onClick={(event) => handleShow(event, country.name.common)}>show</button>
                     {show[country.name.common] ? <Country country={country} /> : null}
-                  </p>
+                  </div>
                 )
             )
         }
