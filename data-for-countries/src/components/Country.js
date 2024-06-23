@@ -1,18 +1,25 @@
 import React from 'react';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+
 const Country = ({ country }) => {
     const [weather, setWeather] = useState({})
+    const apiKey = process.env.REACT_APP_API_KEY
+
     useEffect(() => {
+        if (!apiKey) {
+            console.error('No API key found')
+            return
+        }
         axios
-            .get(`http://api.weatherstack.com/current?access_key=21de66282bcb85ef79e97502087c36b5&query=${country.capital[0]}`)
+            //.get(`http://api.weatherstack.com/current?access_key=21de66282bcb85ef79e97502087c36b5&query=${country.capital[0]}`)
+            .get(`http://api.weatherstack.com/current?access_key=${apiKey}&query=${country.capital[0]}`)
             .then(response => {
                 console.log(response.data)
                 setWeather(response.data)
-            }
-            )
+            })
             .catch((error) => console.error(error))
-    }, [country])
+    }, [country, apiKey])
     return (
         <div>
             <h2>{country.name.common}</h2>
