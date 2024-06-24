@@ -1,8 +1,12 @@
 import React from 'react'
 
-const Note = ({ note }) => {
+const Note = ({ note, toggleImportance }) => {
+    const bt = note.important ? 'make not important' : 'make important'
     return (
-        <li>{note.content}</li>
+        <div>
+            <li>{note.content}</li>
+            <button onClick={toggleImportance}>{bt}</button>
+        </div>
     )
 }
 
