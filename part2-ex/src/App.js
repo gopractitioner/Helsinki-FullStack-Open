@@ -3,18 +3,15 @@ import React from 'react'
 import SearchBar from './components/SearchBar'
 import PhoneBookInfo from './components/PhoneBookInfo'
 import AddNewInfo from './components/AddNewInfo'
-import axios from 'axios'
 import { useEffect } from 'react'
 import phoneBookInfoService from './services/phoneBookInfoService'
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
-  const [personNameSet, setPersonNameSet] = useState(new Set('Arto Hellas'))
-  const [numberSet, setNumberSet] = useState(new Set('040-1234567'))
+  const [personNameSet, setPersonNameSet] = useState(new Set())
+  const [numberSet, setNumberSet] = useState(new Set())
   const [search, setSearch] = useState('')
-
-
 
   useEffect(() => {
     console.log('effect')
@@ -23,6 +20,10 @@ const App = () => {
         console.log('promise fulfilled')
         if (JSON.stringify(returnedData) !== JSON.stringify(persons)) {
           setPersons(returnedData)
+          const names = returnedData.map(person => person.name)
+          const numbers = returnedData.map(person => person.number)
+          setPersonNameSet(new Set(names))
+          setNumberSet(new Set(numbers))
         }
       })
   }, [persons])
@@ -39,30 +40,44 @@ const App = () => {
   const handleSubmit = (event) => {
     event.preventDefault()
     //console.log('button clicked', event.target)
-    if (personNameSet.has(newName)) {
-      alert(`${newName} is already added to phonebook`)
-      return
-    }
-    if (numberSet.has(newNumber)) {
-      alert(`${newNumber} is already added to phonebook`)
-      return
-    }
     if (newName === '' || newNumber === '') {
       alert('Please enter both name and number')
       return
     }
-    const personObject = {
-      name: newName,
-      number: newNumber,
-      id: (persons.length + 1).toString(),
+    if (personNameSet.has(newName) && numberSet.has(newNumber)) {
+      alert(`${newName} and ${newNumber} are already added to phonebook`)
+      return
+    } else if (personNameSet.has(newName) && !numberSet.has(newNumber)) {
+      const person = persons.find(person => person.name === newName)
+      const oldNumber = person.number
+      if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+        const changedPerson = { ...person, number: newNumber }
+        phoneBookInfoService.update(person.id, changedPerson)
+        setPersons(persons.map(person => person.id !== changedPerson.id ? person : changedPerson))
+        setNewName('')
+        setNewNumber('')
+        const newNumberSet = new Set([...numberSet])
+        newNumberSet.delete(oldNumber)
+        newNumberSet.add(newNumber)
+        setNumberSet(newNumberSet)
+      }
+      return
+    } else if (!personNameSet.has(newName) && numberSet.has(newNumber)) {
+      alert(`${newNumber} is already added to phonebook for another person`)
+      return
+    } else {
+      const personObject = {
+        name: newName,
+        number: newNumber,
+        id: (persons.length + 1).toString(),
+      }
+      phoneBookInfoService.create(personObject)
+      setPersons(persons.concat(personObject))
+      setPersonNameSet(new Set([...personNameSet, newName]))
+      setNumberSet(new Set([...numberSet, newNumber]))
+      setNewName('')
+      setNewNumber('')
     }
-    phoneBookInfoService.create(personObject)
-    setPersons(persons.concat(personObject))
-    setPersonNameSet(personNameSet.add(newName))
-    setNumberSet(numberSet.add(newNumber))
-    setNewName('')
-    setNewNumber('')
-    //console.log("IDs: ", persons.map(person => person.id))
   }
   const handleSearchChange = (event) => {
     //console.log(event.target.value)
