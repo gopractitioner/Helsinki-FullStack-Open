@@ -5,6 +5,7 @@ import PhoneBookInfo from './components/PhoneBookInfo'
 import AddNewInfo from './components/AddNewInfo'
 import { useEffect } from 'react'
 import phoneBookInfoService from './services/phoneBookInfoService'
+import Notification from './components/Notification'
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
@@ -12,6 +13,10 @@ const App = () => {
   const [personNameSet, setPersonNameSet] = useState(new Set())
   const [numberSet, setNumberSet] = useState(new Set())
   const [search, setSearch] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+  const [normalMessage, setNormalMessage] = useState('No message...')
+  const [infoFlag, setInfoFlag] = useState(true)
+  const [largetId, setLargestId] = useState(0)
 
   useEffect(() => {
     console.log('effect')
@@ -24,6 +29,7 @@ const App = () => {
           const numbers = returnedData.map(person => person.number)
           setPersonNameSet(new Set(names))
           setNumberSet(new Set(numbers))
+          setLargestId(returnedData.map(person => person.id).reduce((a, b) => Math.max(a, b), 0))
         }
       })
   }, [persons])
@@ -53,6 +59,11 @@ const App = () => {
       if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
         const changedPerson = { ...person, number: newNumber }
         phoneBookInfoService.update(person.id, changedPerson)
+        setNormalMessage(`Info of '${newName}' is updated`)
+        setTimeout(() => {
+          setNormalMessage('No message...')
+          console.log('done...')
+        }, 5000)
         setPersons(persons.map(person => person.id !== changedPerson.id ? person : changedPerson))
         setNewName('')
         setNewNumber('')
@@ -69,9 +80,14 @@ const App = () => {
       const personObject = {
         name: newName,
         number: newNumber,
-        id: (persons.length + 1).toString(),
+        id: (largetId + 1).toString(),
       }
       phoneBookInfoService.create(personObject)
+      setNormalMessage(`a new person '${newName}' added`)
+      setTimeout(() => {
+        setNormalMessage('No message...')
+        console.log('done...')
+      }, 5000)
       setPersons(persons.concat(personObject))
       setPersonNameSet(new Set([...personNameSet, newName]))
       setNumberSet(new Set([...numberSet, newNumber]))
@@ -105,6 +121,7 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
+      <Notification message={infoFlag ? normalMessage : errorMessage} infoFlag={infoFlag} />
       <h3>Search Bar</h3>
       <SearchBar search={search} handleSearch={handleSearch} handleSearchChange={handleSearchChange} />
       <h3>PhonebookInfo</h3>
