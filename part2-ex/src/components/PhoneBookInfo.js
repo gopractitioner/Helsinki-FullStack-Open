@@ -8,6 +8,7 @@ const PhoneBookInfo = (props) => {
                     <ul key={person.id}>
                         <li>{person.name}</li>
                         <li>{person.number}</li>
+                        <button onClick={() => props.deletePerson(person.id)}>delete</button>
                     </ul>
                 )
             }

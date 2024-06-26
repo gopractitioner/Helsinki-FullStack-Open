@@ -5,6 +5,7 @@ import PhoneBookInfo from './components/PhoneBookInfo'
 import AddNewInfo from './components/AddNewInfo'
 import axios from 'axios'
 import { useEffect } from 'react'
+import phoneBookInfoService from './services/phoneBookInfoService'
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
@@ -17,13 +18,14 @@ const App = () => {
 
   useEffect(() => {
     console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
+    phoneBookInfoService.getAll()
+      .then(returnedData => {
         console.log('promise fulfilled')
-        setPersons(response.data)
+        if (JSON.stringify(returnedData) !== JSON.stringify(persons)) {
+          setPersons(returnedData)
+        }
       })
-  }, [])
+  }, [persons])
   console.log('render', persons.length, 'persons')
 
 
@@ -52,8 +54,9 @@ const App = () => {
     const personObject = {
       name: newName,
       number: newNumber,
-      id: persons.length + 1,
+      id: (persons.length + 1).toString(),
     }
+    phoneBookInfoService.create(personObject)
     setPersons(persons.concat(personObject))
     setPersonNameSet(personNameSet.add(newName))
     setNumberSet(numberSet.add(newNumber))
@@ -76,6 +79,14 @@ const App = () => {
     }
     setSearch('')
   }
+  const handleDelete = (id) => {
+    const person = persons.find(person => person.id === id)
+    if (window.confirm(`Delete ${person.name}?`)) {
+      phoneBookInfoService.deletePerson(id)
+      setPersons(persons.filter(person => person.id !== id))
+    }
+    //phoneBookInfoService.deletePerson(id)
+  }
   return (
     <div>
       <h2>Phonebook</h2>
@@ -84,7 +95,7 @@ const App = () => {
       <h3>PhonebookInfo</h3>
       <AddNewInfo handleSubmit={handleSubmit} handleNameChange={handleNameChange} handleNumberChange={handleNumberChange} newName={newName} newNumber={newNumber} />
       <h3>Numbers</h3>
-      <PhoneBookInfo persons={persons} />
+      <PhoneBookInfo persons={persons} deletePerson={handleDelete} />
     </div>
   )
 }
