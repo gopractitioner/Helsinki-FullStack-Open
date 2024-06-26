@@ -104,7 +104,7 @@ const App = () => {
   }
   return (
     <div>
-      <h2>Phonebook</h2>
+      <h1>Phonebook</h1>
       <h3>Search Bar</h3>
       <SearchBar search={search} handleSearch={handleSearch} handleSearchChange={handleSearchChange} />
       <h3>PhonebookInfo</h3>
