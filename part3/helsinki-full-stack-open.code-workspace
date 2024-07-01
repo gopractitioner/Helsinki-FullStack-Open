@@ -5,6 +5,12 @@
 		},
 		{
 			"path": "../../helsinki-full-stack-part3"
+		},
+		{
+			"path": "../../part3-notes-backend"
+		},
+		{
+			"path": "../../notes-frontend"
 		}
 	],
 	"settings": {}
